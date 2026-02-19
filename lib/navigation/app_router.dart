@@ -2,6 +2,7 @@
 import 'package:ecommerce_app/features/product/presentation/home_screen.dart';
 import 'package:ecommerce_app/features/product/presentation/product_list_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ecommerce_app/features/product/presentation/product_detail_screen.dart';
 
 class AppRouter {
   // Gunakan static agar bisa langsung dipanggil tanpa instansiasi kelas
@@ -12,6 +13,13 @@ class AppRouter {
       GoRoute(
         path: '/',
         builder: (context, state) => const ProductListScreen(),
+      ),
+      GoRoute(
+        path: '/detail/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return ProductDetailScreen(productId: id);
+        },
       ),
     ],
   );

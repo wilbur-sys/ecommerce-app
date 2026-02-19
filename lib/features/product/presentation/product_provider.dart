@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../data/product_repository_impl.dart';
 import '../data/product_service.dart';
 import '../data/product_model.dart';
@@ -14,9 +15,21 @@ final productRepositoryProvider = Provider<ProductRepositoryImpl>((ref) {
   return ProductRepositoryImpl(service);
 });
 
-/// Future provider untuk ambil list produk
+/// State untuk menyimpan query search
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+/// Provider utama list produk (dynamic berdasarkan query)
 final productListProvider =
     FutureProvider<List<ProductModel>>((ref) async {
   final repository = ref.watch(productRepositoryProvider);
-  return repository.getProducts();
+  final query = ref.watch(searchQueryProvider);
+
+  if (query.isEmpty) {
+    return repository.getProducts();
+  } else {
+    return repository.searchProducts(query);
+  }
 });
+
+
+

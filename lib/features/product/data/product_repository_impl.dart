@@ -12,4 +12,12 @@ class ProductRepositoryImpl implements ProductRepository {
     // Di sini bisa tambahkan logika Cache/Lokal
     return await service.fetchProducts();
   }
+
+  Future<ProductModel> getProductDetail(int id) async {
+    return await service.fetchProductDetail(id);
+  }
+
+  Future<List<ProductModel>> searchProducts(String query) async {
+    return await service.searchProducts(query);
+  }
 }
