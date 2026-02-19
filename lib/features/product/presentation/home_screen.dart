@@ -1,7 +1,6 @@
 import 'package:ecommerce_app/features/product/data/product_repository_impl.dart';
 import 'package:ecommerce_app/features/product/data/product_service.dart';
 import 'package:flutter/material.dart';
-import '../data/product_remote_data_source.dart'; // Import data source yang dibuat sebelumnya
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

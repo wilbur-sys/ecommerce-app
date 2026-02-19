@@ -1,5 +1,6 @@
 // lib/navigation/app_router.dart
 import 'package:ecommerce_app/features/product/presentation/home_screen.dart';
+import 'package:ecommerce_app/features/product/presentation/product_list_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
@@ -10,7 +11,7 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const ProductListScreen(),
       ),
     ],
   );
