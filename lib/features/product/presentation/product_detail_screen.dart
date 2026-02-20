@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'product_detail_provider.dart';
+import '../../cart/presentation/cart_provider.dart';
+import '../../cart/data/cart_item_model.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
   final int productId;
 
-  const ProductDetailScreen({
-    super.key,
-    required this.productId,
-  });
+  const ProductDetailScreen({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productAsync = ref.watch(productDetailProvider(productId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Product Detail")),
+      appBar: AppBar(
+        title: const Text("Product Detail"),
+      ),
       body: productAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, stack) => Center(
-          child: Text("Error:\n$error"),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text("Error:\n$error")),
         data: (product) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -41,10 +38,7 @@ class ProductDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   "\$${product.price}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.green,
-                  ),
+                  style: const TextStyle(fontSize: 18, color: Colors.green),
                 ),
                 const SizedBox(height: 8),
                 Text("Rating: ${product.rating} ⭐"),
@@ -52,6 +46,31 @@ class ProductDetailScreen extends ConsumerWidget {
                 Text("Category: ${product.category}"),
                 const SizedBox(height: 16),
                 Text(product.description),
+                const SizedBox(height: 20),
+                // add Cart
+                ElevatedButton(
+                  onPressed: () {
+                    ref
+                        .read(cartProvider.notifier)
+                        .addItem(
+                          CartItemModel(
+                            productId: product.id,
+                            title: product.title,
+                            price: product.price,
+                            thumbnail: product.thumbnail,
+                            quantity: 1,
+                          ),
+                        );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Added to cart"),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                  child: const Text("Add to Cart"),
+                ),
               ],
             ),
           );

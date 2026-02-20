@@ -1,18 +1,55 @@
+import 'package:ecommerce_app/features/cart/presentation/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'product_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:async';
 
-class ProductListScreen extends ConsumerWidget {
+class ProductListScreen extends ConsumerStatefulWidget {
   const ProductListScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductListScreen> createState() => _ProductListScreenState();
+}
+
+class _ProductListScreenState extends ConsumerState<ProductListScreen> {
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    if (_debounce?.isActive ?? false) {
+      _debounce?.cancel();
+    }
+
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      ref.read(searchQueryProvider.notifier).state = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final productAsync = ref.watch(productListProvider);
-    final query = ref.watch(searchQueryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Product List")),
+      appBar: AppBar(
+        title: const Text("Product List"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CartScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -22,11 +59,12 @@ class ProductListScreen extends ConsumerWidget {
                 hintText: "Search product...",
                 border: OutlineInputBorder(),
               ),
-              onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value;
-              },
+              onChanged: _onSearchChanged,
             ),
           ),
+
+          // 🔹 Subtle loading indicator saat search
+          if (productAsync.isLoading) const LinearProgressIndicator(),
 
           Expanded(
             child: productAsync.when(
